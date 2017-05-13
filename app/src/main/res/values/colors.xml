@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#ffbb00</color>
+    <color name="colorPrimaryDark">#515151</color>
+    <color name="colorAccent">#dcfaf600</color>
+    <color name="registerbackground">#fcc220</color>
+    <color name="colorSplash">#ffe205</color>
+    <color name="request_taxi">#ffffff</color>
+    <color name="taksiListYazi">#f48a00</color>
+    <color name="sari">#ffe205</color>
+    <color name="mavi">#000ccc</color>
+    <color name="white">#ffffff</color>
+</resources>

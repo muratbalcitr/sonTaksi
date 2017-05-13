@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activity_login"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/logo"
+    tools:context="com.murat.murat.sontaxi.Login_pages.LoginActivity">
+
+    <com.facebook.login.widget.LoginButton
+        android:id="@+id/login_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentStart="true"
+        android:layout_centerVertical="true"
+        android:layout_gravity="center_horizontal"
+        android:paddingBottom="12dp"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
+        android:paddingTop="10dp"
+        android:textSize="18sp" />
+
+    <TextView
+        android:id="@+id/textView3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignEnd="@+id/login_button"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/login_button"
+        android:layout_marginBottom="12dp"
+        android:layout_marginTop="12dp"
+        android:gravity="center_horizontal"
+        android:text="veya E-mail ile giriş yapın"
+        android:textColor="@color/colorPrimary"
+        android:textSize="18sp" />
+
+    <EditText
+        android:id="@+id/LoginEmailEditText"
+        android:layout_width="wrap_content"
+        android:layout_height="50dp"
+        android:layout_alignEnd="@+id/textView3"
+        android:layout_alignStart="@+id/login_button"
+        android:layout_below="@+id/textView3"
+        android:layout_marginLeft="20dp"
+
+        android:layout_marginRight="20dp"
+        android:background="@android:drawable/editbox_background_normal"
+        android:ems="10"
+        android:gravity="center_vertical|center"
+        android:hint="e-mail"
+        android:inputType="textPersonName" />
+
+    <EditText
+        android:id="@+id/LoginPasswordEditText"
+        android:layout_width="wrap_content"
+        android:layout_height="50dp"
+        android:background="@android:drawable/editbox_background_normal"
+        android:ems="10"
+        android:gravity="center_vertical|center"
+        android:hint="password"
+        android:inputType="textPassword"
+        android:layout_below="@+id/LoginEmailEditText"
+        android:layout_alignStart="@+id/LoginEmailEditText"
+        android:layout_marginTop="12dp"
+        android:layout_alignEnd="@+id/LoginEmailEditText" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="75dp"
+        android:layout_alignEnd="@+id/LoginPasswordEditText"
+        android:layout_alignParentBottom="true"
+        android:layout_alignStart="@+id/LoginPasswordEditText"
+        android:orientation="horizontal"
+        android:weightSum="1"
+        android:paddingLeft="6dp"
+        android:paddingRight="6dp">
+
+        <Button
+            android:id="@+id/btnkayitol"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentStart="true"
+            android:layout_weight="0.5"
+            android:background="@drawable/sekilbuton"
+            android:elevation="1dp"
+            android:shadowRadius="30"
+            android:text="Kayit Ol"
+            android:textColor="@color/cast_expanded_controller_progress_text_color"
+            android:textSize="18sp"
+            tools:textStyle="normal|bold"
+            android:textStyle="normal|bold" />
+
+        <Button
+            android:id="@+id/btnHeyTaksi"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignTop="@+id/btnkayitol"
+            android:layout_marginLeft="12dp"
+            android:layout_toEndOf="@+id/btnkayitol"
+            android:layout_weight="0.5"
+            android:background="@drawable/custom"
+            android:shadowColor="#F2FF38"
+            android:shadowRadius="30"
+            android:text="@string/Haydi_Durma"
+            android:textColor="@android:color/holo_blue_light"
+            android:textSize="18sp"
+            android:textStyle="normal|bold" />
+
+    </LinearLayout>
+
+</RelativeLayout>
