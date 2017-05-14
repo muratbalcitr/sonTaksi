@@ -42,7 +42,7 @@
         </activity>
         <activity android:name=".Haritaprocess.TaksiCagir" />
         <activity android:name=".Degerlendirme" />
-        <activity android:name=".Taksi_yerleri" />
+        <activity android:name=".Haritaprocess.Taksi_yerleri" />
         <activity
             android:name=".Haritaprocess.MesafeUcretHesapla"
             android:label="@string/title_activity_mesafe_ucret_hesapla" />

@@ -2,6 +2,7 @@ package com.murat.murat.sontaxi.Haritaprocess;
 
 import android.Manifest;
 import android.app.Activity;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentSender;
@@ -21,16 +22,14 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
-import com.facebook.FacebookCallback;
-import com.facebook.FacebookException;
-import com.facebook.login.LoginResult;
-import com.facebook.login.widget.LoginButton;
 import com.firebase.ui.auth.AuthUI;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -63,8 +62,6 @@ import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.murat.murat.sontaxi.R;
-import com.murat.murat.sontaxi.Splash;
-import com.murat.murat.sontaxi.Taksi_yerleri;
 
 import org.json.JSONObject;
 
@@ -78,7 +75,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 
 public class TaksiCagir extends FragmentActivity implements OnMapReadyCallback,
@@ -93,7 +89,6 @@ public class TaksiCagir extends FragmentActivity implements OnMapReadyCallback,
     Marker mCurrLocationMarker;
     LocationRequest mLocationRequest;
     TextView tvDistanceDuration;
-    String mesafe, sure;
     GPSTracker gpsTracker;
     public static final String ANONYMOUS = "anonymous";
     private String mUsername;
@@ -107,7 +102,18 @@ public class TaksiCagir extends FragmentActivity implements OnMapReadyCallback,
     String stringLatitude, stringLongitude, country, city, postalCode, addressLine;
     CallbackManager fcallbackManager;
     public static final int RC_SIGN_IN = 1;
-
+    protected static final int REQUEST_CHECK_SETTINGS = 0x1;
+    // Executes in UI thread, after the parsing process
+    AlertDialog.Builder kacpara;
+    TextView tvSehirAdi;
+    String genel = "3.1 tl";
+    double kilometre = 2.10;
+    String sehirAdi;
+    String distance = "";
+    String duration = "";
+    Boolean isGPSEnabled = false;
+    protected LocationManager locationManager;
+    Button taksicagir;
     LatLng latLngCurrentLocation;
 
     @Override
@@ -116,12 +122,21 @@ public class TaksiCagir extends FragmentActivity implements OnMapReadyCallback,
         setContentView(R.layout.activity_taksi_cagir);
         gpsTracker = new GPSTracker(getApplicationContext());
         MarkerPoints = new ArrayList<>();
+        taksicagir = (Button) findViewById(R.id.btnTaxiCagir);
+        taksicagir.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i = new Intent(TaksiCagir.this, Taksi_yerleri.class);
+                startActivity(i);
+            }
+        });
         tvDistanceDuration = (TextView) findViewById(R.id.tvMesafe);
+        tvSehirAdi = (TextView) findViewById(R.id.tvSehirAdi);
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
-        loginprocess();
+         loginprocess();
 
 
     }
@@ -170,18 +185,36 @@ public class TaksiCagir extends FragmentActivity implements OnMapReadyCallback,
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == RC_SIGN_IN) {
-            if (resultCode == RESULT_OK) {
-                Toast.makeText(this, "Signed is succesfuly", Toast.LENGTH_SHORT).show();
-
-                // handleFacebookAccessToken(AccessToken.getCurrentAccessToken());
-                finish();
-            } else if (resultCode == RESULT_CANCELED) {
-                Toast.makeText(this, "Signed is canceled", Toast.LENGTH_SHORT).show();
-                finish();
-            }
+        switch (resultCode) {
+            case RC_SIGN_IN:
+                if (resultCode == RESULT_OK) {
+                    Toast.makeText(this, "Signed is succesfuly", Toast.LENGTH_SHORT).show();
+                    // handleFacebookAccessToken(AccessToken.getCurrentAccessToken());
+                    finish();
+                } else if (resultCode == RESULT_CANCELED) {
+                    Toast.makeText(this, "Signed is canceled", Toast.LENGTH_SHORT).show();
+                    finish();
+                }
+                break;
+            case REQUEST_LOCATION:
+                switch (resultCode) {
+                    case Activity.RESULT_OK: {
+                        // All required changes were successfully made
+                        Toast.makeText(getApplicationContext(), "Location enabled by user!", Toast.LENGTH_LONG).show();
+                        break;
+                    }
+                    case Activity.RESULT_CANCELED: {
+                        // The user was asked to change settings, but chose not to
+                        Toast.makeText(getApplicationContext(), "Location not enabled, user cancelled.", Toast.LENGTH_LONG).show();
+                        break;
+                    }
+                    default: {
+                        Toast.makeText(this, "afghhh", Toast.LENGTH_SHORT).show();
+                        break;
+                    }
+                }
+                break;
         }
-
     }
 
     private void onSignedInitialize(String username) {
@@ -198,30 +231,6 @@ public class TaksiCagir extends FragmentActivity implements OnMapReadyCallback,
         if (mChildEventListener != null) {
             mMessagesDatabaseReference.removeEventListener(mChildEventListener);
             mChildEventListener = null;
-        }
-    }
-
-    private void sehirBilgileri() {
-
-        gpsTracker = new GPSTracker(this);
-
-        if (gpsTracker.getIsGPSTrackingEnabled()) {
-            stringLatitude = String.valueOf(gpsTracker.latitude);
-
-            stringLongitude = String.valueOf(gpsTracker.longitude);
-
-            country = gpsTracker.getCountryName(this);
-
-            city = gpsTracker.getLocality(this);
-
-            postalCode = gpsTracker.getPostalCode(this);
-
-            addressLine = gpsTracker.getAddressLine(this);
-            Toast.makeText(gpsTracker, "" + stringLatitude + " " + stringLongitude + " " + city, Toast.LENGTH_SHORT).show();
-
-        } else {
-
-            gpsTracker.showSettingsAlert();
         }
     }
 
@@ -271,6 +280,7 @@ public class TaksiCagir extends FragmentActivity implements OnMapReadyCallback,
                 // Adding new item to the ArrayList
                 MarkerPoints.add(point);
                 MarkerPoints.add(latLngCurrentLocation);
+                // MarkerPoints.add(latLngCurrentLocation);
                 // Creating MarkerOptions
                 options = new MarkerOptions();
 
@@ -333,7 +343,6 @@ public class TaksiCagir extends FragmentActivity implements OnMapReadyCallback,
 
         // Building the url to the web service
         String url = "https://maps.googleapis.com/maps/api/directions/" + output + "?" + parameters;
-
 
         return url;
     }
@@ -439,17 +448,6 @@ public class TaksiCagir extends FragmentActivity implements OnMapReadyCallback,
             return routes;
         }
 
-        // Executes in UI thread, after the parsing process
-        AlertDialog.Builder kacpara;
-
-        String genel = "3.1 tl";
-        double kilometre = 2.10;
-
-        String distance = "";
-        String duration = "";
-        Boolean isGPSEnabled = false;
-        protected LocationManager locationManager;
-
         @Override
         protected void onPostExecute(List<List<HashMap<String, String>>> result) {
             ArrayList<LatLng> points = null;
@@ -471,20 +469,42 @@ public class TaksiCagir extends FragmentActivity implements OnMapReadyCallback,
                     @Override
                     public void run() {
                         kacpara = new AlertDialog.Builder(TaksiCagir.this);
-                        int para = Integer.parseInt(distance.toString().split(" ")[0]);
-                        double para1 = para * 2.10 + 3.45;
-                        kacpara.create();
-                        kacpara.setTitle("Toplam yol ücreti");
-                        kacpara.setIcon(R.drawable.ic_monetization_on);
-                        kacpara.setMessage("Mesafe:" + distance + ", Sure:" + duration + "\n" + " Tahmini ödeyeceğiniz miktar = " + para1 + " tl'dir");
-                        kacpara.setPositiveButton("taksi Çağır", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                Intent i = new Intent(TaksiCagir.this, Taksi_yerleri.class);
-                                startActivity(i);
-                            }
-                        });
-                        kacpara.show();
+                        double para = Double.parseDouble(distance.toString().split(" ")[0]);
+                        sehirAdi = gpsTracker.getCityName(latLngCurrentLocation, getApplicationContext());
+                        tvSehirAdi.setText(sehirAdi);
+                        if (para < 1) {
+                            double para2 = para * 10;
+                            double para1 = (para2 * 2.10 + 3.45) / 10;
+                            kacpara.create();
+                            kacpara.setTitle("Toplam yol ücreti");
+                            kacpara.setIcon(R.drawable.ic_monetization_on);
+                            kacpara.setMessage("Mesafe:" + distance + ", Sure:" + duration + "\n" + " Tahmini ödeyeceğiniz miktar = " + para1 + " tl'dir");
+                            kacpara.setPositiveButton("taksi Çağır", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    Intent i = new Intent(TaksiCagir.this, Taksi_yerleri.class);
+                                    i.putExtra("sehiradi", sehirAdi);
+                                    startActivity(i);
+                                }
+                            });
+                            kacpara.show();
+
+                        } else {
+                            double para1 = para * 2.10 + 3.45;
+                            kacpara.create();
+                            kacpara.setTitle("Toplam yol ücreti");
+                            kacpara.setIcon(R.drawable.ic_monetization_on);
+                            kacpara.setMessage("Mesafe:" + distance + ", Sure:" + duration + "\n" + " Tahmini ödeyeceğiniz miktar = " + para1 + " tl'dir");
+                            kacpara.setPositiveButton("taksi Çağır", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    Intent i = new Intent(TaksiCagir.this, Taksi_yerleri.class);
+                                    i.putExtra("sehiradi", sehirAdi);
+                                    startActivity(i);
+                                }
+                            });
+                            kacpara.show();
+                        }
                     }
                 }, 1500);
 
@@ -502,20 +522,20 @@ public class TaksiCagir extends FragmentActivity implements OnMapReadyCallback,
                     double lat = Double.parseDouble(point.get("lat"));
                     double lng = Double.parseDouble(point.get("lng"));
                     LatLng position = new LatLng(lat, lng);
+
                     points.add(position);
 
                     tvDistanceDuration.setText("Mesafe:" + distance + ", Sure:" + duration);
 
                     // Adding all the points in the route to LineOptions
                     lineOptions.addAll(points);
-                    lineOptions.width(14);
-                    lineOptions.color(Color.RED);
+                    lineOptions.width(14);//çizilecek yolun kalınlığını belirlemektedir.
+                    lineOptions.color(Color.BLUE);
 
                     Log.d("onPostExecute", "onPostExecute lineoptions decoded");
 
                 }
             }
-
             // Drawing polyline in the Google Map for the i-th route
             if (lineOptions != null) {
                 mMap.addPolyline(lineOptions);
@@ -527,18 +547,10 @@ public class TaksiCagir extends FragmentActivity implements OnMapReadyCallback,
 
     protected LocationSettingsRequest mLocationSettingsRequest;
     protected LocationRequest getmLocationRequest;
-    protected static final int REQUEST_CHECK_SETTINGS = 0x1;
 
-    protected void checkLocationSettings() {
-        PendingResult<LocationSettingsResult> resultPendingResult = LocationServices.SettingsApi.checkLocationSettings(
-                mGoogleApiClient,
-                mLocationSettingsRequest);
-        resultPendingResult.setResultCallback(this);
-    }
 
     @Override
     public void onResult(@NonNull LocationSettingsResult locationSettingsResult) {
-
         Status status = locationSettingsResult.getStatus();
         switch (status.getStatusCode()) {
             case LocationSettingsStatusCodes.SUCCESS:
@@ -558,7 +570,6 @@ public class TaksiCagir extends FragmentActivity implements OnMapReadyCallback,
 
     protected synchronized void buildGoogleApiClient() {
         mGoogleApiClient = new GoogleApiClient.Builder(this)
-                .enableAutoManage(this, this)
                 .addConnectionCallbacks(this)
                 .addOnConnectionFailedListener(this)
                 .addApi(LocationServices.API)
@@ -566,12 +577,18 @@ public class TaksiCagir extends FragmentActivity implements OnMapReadyCallback,
         mGoogleApiClient.connect();
     }
 
+
+    PendingResult<LocationSettingsResult> result;
+    final static int REQUEST_LOCATION = 199;
+    Context context;
+
     @Override
     public void onConnected(Bundle bundle) {
 
-        mLocationRequest = new LocationRequest();
-        mLocationRequest.setInterval(1000);
-        mLocationRequest.setFastestInterval(1000);
+        mLocationRequest = LocationRequest.create();
+        mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+        mLocationRequest.setInterval(30 * 1000);
+        mLocationRequest.setFastestInterval(5 * 1000);
         mLocationRequest.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
 
         if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -586,7 +603,47 @@ public class TaksiCagir extends FragmentActivity implements OnMapReadyCallback,
         }
         LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, this);
 
+
+        LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder()
+                .addLocationRequest(mLocationRequest);
+        builder.setAlwaysShow(true);
+
+        result = LocationServices.SettingsApi.checkLocationSettings(mGoogleApiClient, builder.build());
+
+        result.setResultCallback(new ResultCallback<LocationSettingsResult>() {
+            @Override
+            public void onResult(LocationSettingsResult result) {
+                final Status status = result.getStatus();
+                //final LocationSettingsStates state = result.getLocationSettingsStates();
+                switch (status.getStatusCode()) {
+                    case LocationSettingsStatusCodes.SUCCESS:
+                        // All location settings are satisfied. The client can initialize location
+                        // requests here.
+                        //...
+                        break;
+                    case LocationSettingsStatusCodes.RESOLUTION_REQUIRED:
+                        // Location settings are not satisfied. But could be fixed by showing the user
+                        // a dialog.
+                        try {
+                            // Show the dialog by calling startResolutionForResult(),
+                            // and check the result in onActivityResult().
+                            status.startResolutionForResult(
+                                    TaksiCagir.this,
+                                    REQUEST_CHECK_SETTINGS);
+                        } catch (IntentSender.SendIntentException e) {
+                            Toast.makeText(TaksiCagir.this, "asdasdasd", Toast.LENGTH_SHORT).show();
+                        }
+                        break;
+                    case LocationSettingsStatusCodes.SETTINGS_CHANGE_UNAVAILABLE:
+                        // Location settings are not satisfied. However, we have no way to fix the
+                        // settings so we won't show the dialog.
+                        //...
+                        break;
+                }
+            }
+        });
     }
+
 
     @Override
     public void onConnectionSuspended(int i) {

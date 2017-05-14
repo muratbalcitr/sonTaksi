@@ -42,43 +42,57 @@
         app:backgroundTint="@android:color/transparent"
         app:elevation="0dp" />
 
-   <!-- <EditText
-        android:id="@+id/etDestinationLocation"
+    <!-- <EditText
+         android:id="@+id/etDestinationLocation"
+         android:layout_width="wrap_content"
+         android:layout_height="wrap_content"
+         android:layout_alignEnd="@+id/floatMyLocations"
+         android:layout_alignStart="@+id/etStartLocation"
+         android:layout_below="@+id/etStartLocation"
+         android:layout_marginTop="12dp"
+         android:background="@drawable/konumedittext"
+         android:ems="10"
+         android:gravity="center_vertical|center"
+         android:hint="varış yeri"
+         android:inputType="textPersonName" />
+
+     <EditText
+         android:id="@+id/etStartLocation"
+         android:layout_width="wrap_content"
+         android:layout_height="wrap_content"
+         android:layout_alignEnd="@+id/btnTaxiCagir"
+         android:layout_alignParentTop="true"
+         android:layout_alignStart="@+id/btnTaxiCagir"
+         android:layout_marginTop="11dp"
+         android:background="@drawable/konumedittext"
+         android:ems="10"
+         android:gravity="center_vertical|center"
+         android:hint="konumun"
+         android:inputType="textPersonName" />-->
+    <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignEnd="@+id/floatMyLocations"
-        android:layout_alignStart="@+id/etStartLocation"
-        android:layout_below="@+id/etStartLocation"
-        android:layout_marginTop="12dp"
-        android:background="@drawable/konumedittext"
-        android:ems="10"
-        android:gravity="center_vertical|center"
-        android:hint="varış yeri"
-        android:inputType="textPersonName" />
+        android:orientation="horizontal">
 
-    <EditText
-        android:id="@+id/etStartLocation"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignEnd="@+id/btnTaxiCagir"
-        android:layout_alignParentTop="true"
-        android:layout_alignStart="@+id/btnTaxiCagir"
-        android:layout_marginTop="11dp"
-        android:background="@drawable/konumedittext"
-        android:ems="10"
-        android:gravity="center_vertical|center"
-        android:hint="konumun"
-        android:inputType="textPersonName" />-->
+        <TextView
+            android:id="@+id/tvMesafe"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="25dp"
+            android:layout_weight="0.2"
+            android:layout_marginLeft="5dp"
+            android:text="toplam süre"
+            android:textColor="@color/common_google_signin_btn_text_dark_focused" />
 
-    <TextView
-        android:text="TextView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-
-        android:layout_marginStart="25dp"
-        android:id="@+id/tvMesafe"
-        android:textColor="@color/common_google_signin_btn_text_dark_focused"
-          />
+        <TextView
+            android:id="@+id/tvSehirAdi"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="sehir adi"
+            android:layout_marginLeft="5dp"
+            android:textColor="@color/common_google_signin_btn_text_dark_focused"
+            android:layout_weight="0.2" />
+    </LinearLayout>
 
 
 </RelativeLayout>

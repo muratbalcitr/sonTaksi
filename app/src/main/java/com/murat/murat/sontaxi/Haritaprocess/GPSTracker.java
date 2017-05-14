@@ -22,6 +22,7 @@ import android.provider.Settings;
 import android.support.v4.app.ActivityCompat;
 import android.util.Log;
 
+import com.google.android.gms.maps.model.LatLng;
 import com.murat.murat.sontaxi.R;
 
 
@@ -103,6 +104,8 @@ public class GPSTracker extends Service implements LocationListener {
 
             // Application can use GPS or Network Provider
             if (!provider_info.isEmpty()) {
+
+
                 if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                     // TODO: Consider calling
                     //    ActivityCompat#requestPermissions
@@ -125,9 +128,7 @@ public class GPSTracker extends Service implements LocationListener {
                     updateGPSCoordinates();
                 }
             }
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             //e.printStackTrace();
             Log.e(TAG, "Impossible to connect to LocationManager", e);
         }
@@ -145,6 +146,7 @@ public class GPSTracker extends Service implements LocationListener {
 
     /**
      * GPSTracker latitude getter and setter
+     *
      * @return latitude
      */
     public double getLatitude() {
@@ -157,6 +159,7 @@ public class GPSTracker extends Service implements LocationListener {
 
     /**
      * GPSTracker longitude getter and setter
+     *
      * @return
      */
     public double getLongitude() {
@@ -202,8 +205,7 @@ public class GPSTracker extends Service implements LocationListener {
         alertDialog.setPositiveButton(R.string.action_settings, new DialogInterface.OnClickListener() {
 
             @Override
-            public void onClick(DialogInterface dialog, int which)
-            {
+            public void onClick(DialogInterface dialog, int which) {
                 Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
                 mContext.startActivity(intent);
             }
@@ -213,8 +215,7 @@ public class GPSTracker extends Service implements LocationListener {
         alertDialog.setNegativeButton("NO", new DialogInterface.OnClickListener() {
 
             @Override
-            public void onClick(DialogInterface dialog, int which)
-            {
+            public void onClick(DialogInterface dialog, int which) {
                 dialog.cancel();
             }
         });
@@ -224,6 +225,7 @@ public class GPSTracker extends Service implements LocationListener {
 
     /**
      * Get list of address by latitude and longitude
+     *
      * @return null or List<Address>
      */
     public List<Address> getGeocoderAddress(Context context) {
@@ -250,6 +252,7 @@ public class GPSTracker extends Service implements LocationListener {
 
     /**
      * Try to get AddressLine
+     *
      * @return null or addressLine
      */
     public String getAddressLine(Context context) {
@@ -267,9 +270,11 @@ public class GPSTracker extends Service implements LocationListener {
 
     /**
      * Try to get Locality
+     *
      * @return null or locality
      */
-    public String getLocality(Context context) {
+    public String getLocality(LatLng mevcutKonum,Context context) {
+
         List<Address> addresses = getGeocoderAddress(context);
 
         if (addresses != null && addresses.size() > 0) {
@@ -277,14 +282,28 @@ public class GPSTracker extends Service implements LocationListener {
             String locality = address.getLocality();
 
             return locality;
-        }
-        else {
+        } else {
             return null;
         }
     }
 
+    String addressStr;
+    Geocoder geoCoder;
+
+    public String  getCityName(LatLng mevcutKonum,Context context) {
+        geoCoder = new Geocoder(context);
+        try {
+            List<Address> address = geoCoder.getFromLocation(mevcutKonum.latitude, mevcutKonum.longitude, 1); // Enlem,Boylam,Maksimum Sonuç
+            addressStr = address.get(0).getAdminArea(); // Şehrin ismini vericektir.
+        } catch (IOException e) {
+        } catch (NullPointerException e) {
+        }
+        return addressStr;
+    }
+
     /**
      * Try to get Postal Code
+     *
      * @return null or postalCode
      */
     public String getPostalCode(Context context) {
@@ -302,6 +321,7 @@ public class GPSTracker extends Service implements LocationListener {
 
     /**
      * Try to get CountryName
+     *
      * @return null or postalCode
      */
     public String getCountryName(Context context) {

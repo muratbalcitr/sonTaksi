@@ -1,4 +1,4 @@
-package com.murat.murat.sontaxi;
+package com.murat.murat.sontaxi.Haritaprocess;
 
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -22,7 +22,11 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.murat.murat.sontaxi.Haritaprocess.TaksiCagir;
+import com.murat.murat.sontaxi.DurakEkleme;
+import com.murat.murat.sontaxi.R;
+import com.murat.murat.sontaxi.SehirChange;
+import com.murat.murat.sontaxi.TaksiListesiAdapter;
+import com.murat.murat.sontaxi.Taksiduraklari;
 
 import java.util.ArrayList;
 
@@ -34,7 +38,7 @@ public class Taksi_yerleri extends AppCompatActivity {
     ArrayList<Taksiduraklari> taksiduraklariList;
     FirebaseAuth frAuth;
     TextView tvNumber;
-    String tiklanansehir;
+    String tiklanansehir, sehiradi;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,8 +51,37 @@ public class Taksi_yerleri extends AppCompatActivity {
 
         frAuth = FirebaseAuth.getInstance();
 
-        //SehirDuraklari();
-        tumDuraklar();
+        if (savedInstanceState == null) {
+            Bundle extras = getIntent().getExtras();
+            if (extras == null) {
+                sehiradi = null;
+            } else {
+                sehiradi = extras.getString("sehiradi");
+            }
+        } else {
+            sehiradi = (String) savedInstanceState.getSerializable("sehiradi");
+        }
+
+        SehirChange ss = new SehirChange();
+
+        if (sehiradi == null) {
+            tumDuraklar();
+            Log.d("adapter.", "başarılı");
+            Toast.makeText(this, "lütfen yukardan şehir seçiniz", Toast.LENGTH_SHORT).show();
+        } else {
+            SehirDuraklari(ss.dbToString(sehiradi));
+        }
+        SrcViewsehirAra.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                tiklanansehir = SrcViewsehirAra.getSelectedItem().toString();
+                SehirDuraklari(tiklanansehir);
+            }
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
 
     }
 
@@ -59,14 +92,12 @@ public class Taksi_yerleri extends AppCompatActivity {
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_dropdown_item_1line, illerListesi);
         adapter.notifyDataSetChanged();
         SrcViewsehirAra.setAdapter(adapter);
-        Log.d("adapter.", "başarılı");
-
     }
 
     private void SehirDuraklari(String gelenSehir) {
+
         taksiduraklariList = new ArrayList<>();
         DatabaseReference dbref = FirebaseDatabase.getInstance().getReference().child("taksiIlleri").child(gelenSehir);
-        //   dbref.push().setValue("asdasdas");
         dbref.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -89,7 +120,9 @@ public class Taksi_yerleri extends AppCompatActivity {
             }
         });
     }
+
     String posted_by;
+
     public void btnAra(View view) {
         String uri = "tel:" + tvNumber.getText();
         Intent intent = new Intent(Intent.ACTION_CALL);
@@ -104,15 +137,16 @@ public class Taksi_yerleri extends AppCompatActivity {
             // for ActivityCompat#requestPermissions for more details.
             return;
         }
-       startActivity(intent);
+        startActivity(intent);
     }
 
     public void sehirara(View view) {
         tiklanansehir = SrcViewsehirAra.getSelectedItem().toString();
         SehirDuraklari(tiklanansehir);
     }
+
     public void durakEkle(View view) {
-        Intent i = new Intent(Taksi_yerleri.this,DurakEkleme.class);
+        Intent i = new Intent(Taksi_yerleri.this, DurakEkleme.class);
         startActivity(i);
     }
 }

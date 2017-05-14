@@ -4,54 +4,58 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.murat.murat.sontaxi.Taksi_yerleri">
+    tools:context="com.murat.murat.sontaxi.Haritaprocess.Taksi_yerleri">
 
 
     <LinearLayout
         android:id="@+id/linearLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
         android:background="@color/sari"
-        android:orientation="horizontal"
-        android:layout_alignParentEnd="true">
+        android:orientation="horizontal">
 
         <Spinner
             android:id="@+id/spnSehirler"
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:contextClickable="true"
+            android:layout_marginRight="10dp"
             android:layout_weight="0.6"
-            android:layout_gravity="center"
+            android:contextClickable="true"
             android:spinnerMode="dialog" />
 
-        <Button
+        <ImageButton
             android:id="@+id/btnSehirler"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="64dp"
             android:layout_weight="0.2"
-            android:onClick="sehirara"
-            android:background="@drawable/ic_search" />
+            android:background="@android:color/white"
+            android:src="@drawable/ic_search"
+            android:layout_marginLeft="10dp"
+            android:padding="5dp"
+            android:onClick="sehirara" />
     </LinearLayout>
 
     <ListView
         android:id="@+id/lvDuraklar"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:paddingTop="2dp"
         android:layout_alignParentStart="true"
+        android:layout_below="@+id/linearLayout"
         android:background="@color/com_facebook_button_background_color_disabled"
-        tools:listitem="@layout/listitem"
-        android:layout_below="@+id/linearLayout" />
-<Button
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:layout_alignParentBottom="true"
-    android:text="DURAK EKLE"
-    android:background="@drawable/soliconbutton"
-    android:paddingLeft="13dp"
-    android:drawableStart="@drawable/ic_add_circle_outline"
-    android:textColor="#fff"
-    android:onClick="durakEkle"
-    android:layout_alignParentStart="true" />
+        android:paddingTop="2dp"
+        tools:listitem="@layout/listitem" />
+
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentStart="true"
+        android:background="@drawable/soliconbutton"
+        android:drawableStart="@drawable/ic_add_circle_outline"
+        android:onClick="durakEkle"
+        android:paddingLeft="13dp"
+        android:text="DURAK EKLE"
+        android:textColor="#fff" />
 
 </RelativeLayout>
